@@ -29,9 +29,9 @@ export default function Home() {
     alert("Pump selection submitted! Check console for details.");
   };
 
-  // Calculate total head (pressure + static water level + pump setting depth)
+  // Calculate total head (pressure * 2.31 + static water level + pump setting depth)
   const totalHead =
-    variables.pressure +
+    variables.pressure * 2.31 +
     variables.staticWaterLevel +
     variables.pumpSettingDepth;
 
@@ -204,6 +204,10 @@ export default function Home() {
               <div>
                 <span className="font-medium text-gray-600">Total Head:</span>
                 <p className="text-gray-800">{totalHead.toFixed(1)} feet</p>
+                <span className="text-xs text-gray-500">
+                  (I didnt know what this was but i did pressure x 2.31 + water
+                  level + pump setting depth)
+                </span>
               </div>
             </div>
           </div>
