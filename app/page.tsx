@@ -3,42 +3,19 @@
 import { useState } from "react";
 
 interface PumpVariables {
-  flowRate: number;
   pressure: number;
-  pumpType: string;
-  efficiency: number;
-  material: string;
+  staticWaterLevel: number;
+  pumpSettingDepth: number;
 }
 
 export default function Home() {
   const [variables, setVariables] = useState<PumpVariables>({
-    flowRate: 0,
-    pressure: 0,
-    pumpType: "centrifugal",
-    efficiency: 80,
-    material: "stainless_steel",
+    pressure: 60,
+    staticWaterLevel: 100,
+    pumpSettingDepth: 20,
   });
 
-  const pumpTypes = [
-    { value: "centrifugal", label: "Centrifugal" },
-    { value: "positive_displacement", label: "Positive Displacement" },
-    { value: "submersible", label: "Submersible" },
-    { value: "diaphragm", label: "Diaphragm" },
-    { value: "gear", label: "Gear Pump" },
-  ];
-
-  const materials = [
-    { value: "stainless_steel", label: "Stainless Steel" },
-    { value: "cast_iron", label: "Cast Iron" },
-    { value: "bronze", label: "Bronze" },
-    { value: "plastic", label: "Plastic" },
-    { value: "titanium", label: "Titanium" },
-  ];
-
-  const handleVariableChange = (
-    key: keyof PumpVariables,
-    value: string | number
-  ) => {
+  const handleVariableChange = (key: keyof PumpVariables, value: number) => {
     setVariables((prev) => ({
       ...prev,
       [key]: value,
@@ -52,6 +29,12 @@ export default function Home() {
     alert("Pump selection submitted! Check console for details.");
   };
 
+  // Calculate total head (pressure + static water level + pump setting depth)
+  const totalHead =
+    variables.pressure +
+    variables.staticWaterLevel +
+    variables.pumpSettingDepth;
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8 px-4">
       <div className="max-w-4xl mx-auto">
@@ -60,7 +43,7 @@ export default function Home() {
             DPWD Pump Selection Tool
           </h1>
           <p className="text-gray-600">
-            Select the appropriate variables for your pump application
+            Enter the pressure and depth measurements for your pump application
           </p>
         </div>
 
@@ -68,28 +51,7 @@ export default function Home() {
           onSubmit={handleSubmit}
           className="bg-white rounded-lg shadow-xl p-8"
         >
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Flow Rate */}
-            <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">
-                Flow Rate (GPM)
-              </label>
-              <input
-                type="number"
-                min="0"
-                step="0.1"
-                value={variables.flowRate}
-                onChange={(e) =>
-                  handleVariableChange(
-                    "flowRate",
-                    parseFloat(e.target.value) || 0
-                  )
-                }
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Enter flow rate"
-              />
-            </div>
-
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Pressure */}
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700">
@@ -99,87 +61,116 @@ export default function Home() {
                 type="number"
                 min="0"
                 step="0.1"
-                value={variables.pressure}
+                value={variables.pressure.toString()}
                 onChange={(e) =>
                   handleVariableChange(
                     "pressure",
                     parseFloat(e.target.value) || 0
                   )
                 }
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900 placeholder-gray-500"
                 placeholder="Enter pressure"
               />
+              <p className="text-xs text-gray-500">
+                Required pressure in pounds per square inch
+              </p>
             </div>
 
-            {/* Pump Type */}
+            {/* Static Water Level */}
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700">
-                Pump Type
+                Static Water Level (feet)
               </label>
-              <select
-                value={variables.pumpType}
+              <input
+                type="number"
+                min="0"
+                step="0.1"
+                value={variables.staticWaterLevel.toString()}
                 onChange={(e) =>
-                  handleVariableChange("pumpType", e.target.value)
+                  handleVariableChange(
+                    "staticWaterLevel",
+                    parseFloat(e.target.value) || 0
+                  )
                 }
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                {pumpTypes.map((type) => (
-                  <option key={type.value} value={type.value}>
-                    {type.label}
-                  </option>
-                ))}
-              </select>
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900 placeholder-gray-500"
+                placeholder="Enter static water level"
+              />
+              <p className="text-xs text-gray-500">
+                Distance from ground surface to water level
+              </p>
             </div>
 
-            {/* Efficiency */}
+            {/* Pump Setting Depth */}
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700">
-                Efficiency (%)
+                Pump Setting Depth (feet)
               </label>
-              <div className="relative">
-                <input
-                  type="range"
-                  min="50"
-                  max="95"
-                  step="5"
-                  value={variables.efficiency}
-                  onChange={(e) =>
-                    handleVariableChange("efficiency", parseInt(e.target.value))
-                  }
-                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
-                />
-                <span className="absolute -top-6 right-0 text-sm text-gray-600">
-                  {variables.efficiency}%
-                </span>
-              </div>
+              <input
+                type="number"
+                min="0"
+                step="0.1"
+                value={variables.pumpSettingDepth.toString()}
+                onChange={(e) =>
+                  handleVariableChange(
+                    "pumpSettingDepth",
+                    parseFloat(e.target.value) || 0
+                  )
+                }
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900 placeholder-gray-500"
+                placeholder="Enter pump setting depth"
+              />
+              <p className="text-xs text-gray-500">
+                Depth where the pump will be installed
+              </p>
             </div>
+          </div>
 
-            {/* Material */}
-            <div className="space-y-2 md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700">
-                Material
-              </label>
-              <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-                {materials.map((material) => (
-                  <label
-                    key={material.value}
-                    className="flex items-center space-x-2 cursor-pointer"
-                  >
-                    <input
-                      type="radio"
-                      name="material"
-                      value={material.value}
-                      checked={variables.material === material.value}
-                      onChange={(e) =>
-                        handleVariableChange("material", e.target.value)
-                      }
-                      className="text-blue-600 focus:ring-blue-500"
-                    />
-                    <span className="text-sm text-gray-700">
-                      {material.label}
-                    </span>
-                  </label>
-                ))}
+          {/* Visual Representation */}
+          <div className="mt-8 p-6 bg-gray-50 rounded-lg">
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">
+              Well Diagram
+            </h3>
+            <div className="relative h-64 bg-gradient-to-b from-blue-100 to-blue-300 rounded-lg border-2 border-blue-400">
+              {/* Ground Surface */}
+              <div className="absolute top-0 left-0 right-0 h-2 bg-green-600"></div>
+              <div className="absolute top-2 left-4 text-xs font-medium text-green-800">
+                Ground Surface
+              </div>
+
+              {/* Static Water Level */}
+              <div
+                className="absolute left-4 right-4 border-l-2 border-blue-600"
+                style={{
+                  top: `${Math.min(
+                    20 + variables.staticWaterLevel * 2,
+                    200
+                  )}px`,
+                }}
+              >
+                <div className="absolute -left-6 top-0 text-xs font-medium text-blue-800">
+                  Static Water Level: {variables.staticWaterLevel} ft
+                </div>
+              </div>
+
+              {/* Pump Setting Depth */}
+              <div
+                className="absolute left-4 right-4 border-l-2 border-red-600"
+                style={{
+                  top: `${Math.min(
+                    20 + variables.pumpSettingDepth * 2,
+                    200
+                  )}px`,
+                }}
+              >
+                <div className="absolute -left-6 top-0 text-xs font-medium text-red-800">
+                  Pump Setting: {variables.pumpSettingDepth} ft
+                </div>
+              </div>
+
+              {/* Water Level Indicator */}
+              <div className="absolute bottom-0 left-0 right-0 h-8 bg-blue-500 opacity-60"></div>
+              <div className="absolute bottom-2 left-4 text-xs font-medium text-white">
+                Water
               </div>
             </div>
           </div>
@@ -187,32 +178,32 @@ export default function Home() {
           {/* Summary */}
           <div className="mt-8 p-4 bg-gray-50 rounded-lg">
             <h3 className="text-lg font-semibold text-gray-800 mb-3">
-              Selection Summary
+              Measurement Summary
             </h3>
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm">
-              <div>
-                <span className="font-medium text-gray-600">Flow Rate:</span>
-                <p className="text-gray-800">{variables.flowRate} GPM</p>
-              </div>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
               <div>
                 <span className="font-medium text-gray-600">Pressure:</span>
                 <p className="text-gray-800">{variables.pressure} PSI</p>
               </div>
               <div>
-                <span className="font-medium text-gray-600">Pump Type:</span>
+                <span className="font-medium text-gray-600">
+                  Static Water Level:
+                </span>
                 <p className="text-gray-800">
-                  {pumpTypes.find((t) => t.value === variables.pumpType)?.label}
+                  {variables.staticWaterLevel} feet
                 </p>
               </div>
               <div>
-                <span className="font-medium text-gray-600">Efficiency:</span>
-                <p className="text-gray-800">{variables.efficiency}%</p>
+                <span className="font-medium text-gray-600">
+                  Pump Setting Depth:
+                </span>
+                <p className="text-gray-800">
+                  {variables.pumpSettingDepth} feet
+                </p>
               </div>
               <div>
-                <span className="font-medium text-gray-600">Material:</span>
-                <p className="text-gray-800">
-                  {materials.find((m) => m.value === variables.material)?.label}
-                </p>
+                <span className="font-medium text-gray-600">Total Head:</span>
+                <p className="text-gray-800">{totalHead.toFixed(1)} feet</p>
               </div>
             </div>
           </div>
