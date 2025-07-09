@@ -2,12 +2,20 @@
 
 import { LineChart } from "@mui/x-charts/LineChart";
 import { useState } from "react";
+import DecidePump from "./openAi";
 
 interface PumpVariables {
   pressure: number;
   staticWaterLevel: number;
   pumpSettingDepth: number;
   gallonsPerMinute: number;
+}
+
+interface Pump {
+  name: string;
+  efficencyRange: [number, number];
+  value: number;
+  imagePath: string;
 }
 
 export default function Home() {
@@ -18,6 +26,8 @@ export default function Home() {
     gallonsPerMinute: 0,
   });
 
+  const [selectedPump, setSelectedPump] = useState<string | null>(null);
+
   const handleVariableChange = (key: keyof PumpVariables, value: number) => {
     setVariables((prev) => ({
       ...prev,
@@ -25,18 +35,102 @@ export default function Home() {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const generatePumpSelection = async () => {
+    console.log("=== PUMP SELECTION GENERATION STARTED ===");
+    console.log("Input Variables:", variables);
+
+    try {
+      // Fetch the JSON data from the public directory
+      const response = await fetch("/floWise.json");
+      const floWiseData = await response.json();
+
+      const targetValue = variables.gallonsPerMinute;
+      const pumps = floWiseData.floWise;
+
+      // Sort pumps by their value
+      const sortedPumps = [...pumps].sort((a, b) => a.value - b.value);
+
+      // Find the pump above and below the target value
+      const selectedPumps: Pump[] = [];
+
+      // Check if there's an exact match
+      const exactMatch = sortedPumps.find((pump) => pump.value === targetValue);
+
+      if (exactMatch) {
+        // If there's an exact match, get the exact match and the pump above
+        selectedPumps.push(exactMatch);
+
+        // Find the pump above the exact match
+        const exactMatchIndex = sortedPumps.findIndex(
+          (pump) => pump.value === targetValue
+        );
+        if (exactMatchIndex < sortedPumps.length - 1) {
+          selectedPumps.push(sortedPumps[exactMatchIndex + 1]);
+        }
+      } else {
+        // Find the pump below (closest pump that is <= target)
+        let pumpBelow: Pump | null = null;
+        for (let i = sortedPumps.length - 1; i >= 0; i--) {
+          if (sortedPumps[i].value <= targetValue) {
+            pumpBelow = sortedPumps[i];
+            break;
+          }
+        }
+
+        // Find the pump above (closest pump that is > target)
+        let pumpAbove: Pump | null = null;
+        for (let i = 0; i < sortedPumps.length; i++) {
+          if (sortedPumps[i].value > targetValue) {
+            pumpAbove = sortedPumps[i];
+            break;
+          }
+        }
+
+        // Add the pumps to the selection
+        if (pumpBelow) {
+          selectedPumps.push(pumpBelow);
+        }
+        if (pumpAbove) {
+          selectedPumps.push(pumpAbove);
+        }
+      }
+
+      // Log each pump with its difference from target
+      selectedPumps.forEach((pump) => {
+        const difference = pump.value - targetValue;
+        console.log(
+          `${pump.name}: ${pump.value} GPM (${
+            difference > 0 ? "+" : ""
+          }${difference} GPM from target)`
+        );
+      });
+
+      const pumpChoice = await DecidePump(
+        selectedPumps[0],
+        selectedPumps[1],
+        totalHead,
+        targetValue
+      );
+      console.log("Choosing : ", pumpChoice);
+
+      // Set the selected pump to display in UI
+      setSelectedPump(pumpChoice || null);
+    } catch (error) {
+      console.error("Error loading pump data:", error);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Selected variables: ", variables);
-    // Here you can add logic to process the selection
-    alert("Pump selection submitted! Check console for details.");
+    console.log("Generate Pump Selection button clicked!");
+    await generatePumpSelection();
   };
 
   // Calculate total head (pressure * 2.31 + static water level + pump setting depth)
   const totalHead =
     variables.pressure * 2.31 +
     variables.staticWaterLevel +
-    variables.pumpSettingDepth;
+    (variables.pressure * 2.31 + variables.pumpSettingDepth);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8 px-4">
@@ -46,7 +140,6 @@ export default function Home() {
             DPWD Pump Selection Tool
           </h1>
         </div>
-
         <form
           onSubmit={handleSubmit}
           className="bg-white rounded-lg shadow-xl p-8"
@@ -203,10 +296,6 @@ export default function Home() {
               <div>
                 <span className="font-medium text-gray-600">Total Head:</span>
                 <p className="text-gray-800">{totalHead.toFixed(1)} feet</p>
-                <span className="text-xs text-gray-500">
-                  (I didnt know what this was but i did pressure x 2.31 + water
-                  level + pump setting depth)
-                </span>
               </div>
             </div>
           </div>
@@ -221,6 +310,23 @@ export default function Home() {
             </button>
           </div>
         </form>
+
+        {/* Selected Pump Display */}
+        {selectedPump && (
+          <div className="mt-8 bg-white rounded-lg shadow-xl p-8">
+            <h2 className="text-2xl font-bold text-gray-800 mb-4 text-center">
+              Recommended Pump
+            </h2>
+            <div className="text-center">
+              <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg">
+                <p className="text-lg font-semibold">{selectedPump}</p>
+                <p className="text-sm mt-1">
+                  This pump has been selected based on your requirements.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

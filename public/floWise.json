@@ -1,0 +1,70 @@
+{
+  "floWise": [
+    {
+      "name": "5gpm",
+      "efficencyRange": [1.5, 7.5],
+      "value": 5,
+      "imagePath": "/floWise/5gpm.png"
+    },
+    {
+      "name": "7gpm",
+      "efficencyRange": [2, 10],
+      "value": 7,
+      "imagePath": "/floWise/7gpm.png"
+    },
+    {
+      "name": "10gpm",
+      "efficencyRange": [3, 15],
+      "value": 10,
+      "imagePath": "/floWise/10gpm.png"
+    },
+    {
+      "name": "13gpm",
+      "efficencyRange": [4, 20],
+      "value": 13,
+      "imagePath": "/floWise/13gpm.png"
+    },
+    {
+      "name": "18gpm",
+      "efficencyRange": [6, 28],
+      "value": 18,
+      "imagePath": "/floWise/18gpm.png"
+    },
+    {
+      "name": "25gpm",
+      "efficencyRange": [8, 32],
+      "value": 25,
+      "imagePath": "/floWise/25gpm.png"
+    },
+    {
+      "name": "35gpm",
+      "efficencyRange": [10, 48],
+      "value": 35,
+      "imagePath": "/floWise/35gpm.png"
+    },
+    {
+      "name": "40gpm",
+      "efficencyRange": [20, 62],
+      "value": 40,
+      "imagePath": "/floWise/40gpm.png"
+    },
+    {
+      "name": "55gpm",
+      "efficencyRange": [20, 78],
+      "value": 55,
+      "imagePath": "/floWise/55gpm.png"
+    },
+    {
+      "name": "60gpm",
+      "efficencyRange": [40, 80],
+      "value": 60,
+      "imagePath": "/floWise/60gpm.png"
+    },
+    {
+      "name": "80gpm",
+      "efficencyRange": [50, 120],
+      "value": 80,
+      "imagePath": "/floWise/80gpm.png"
+    }
+  ]
+}
