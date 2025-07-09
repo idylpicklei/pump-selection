@@ -158,6 +158,12 @@ export default function Home() {
                   1201, 1190, 1160, 1130, 1080, 1020, 950, 830, 705, 610, 510,
                   400, 300,
                 ],
+                label: "Pump Curve",
+              },
+              {
+                data: Array(13).fill(totalHead),
+                label: `Total Head: ${totalHead.toFixed(1)} ft`,
+                color: "red",
               },
             ]}
             height={300}
