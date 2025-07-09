@@ -24,7 +24,7 @@ export default function Home() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Selected variables:", variables);
+    console.log("Selected variables: ", variables);
     // Here you can add logic to process the selection
     alert("Pump selection submitted! Check console for details.");
   };
