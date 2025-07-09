@@ -1,18 +1,21 @@
 "use client";
 
+import { LineChart } from "@mui/x-charts/LineChart";
 import { useState } from "react";
 
 interface PumpVariables {
   pressure: number;
   staticWaterLevel: number;
   pumpSettingDepth: number;
+  gallonsPerMinute: number;
 }
 
 export default function Home() {
   const [variables, setVariables] = useState<PumpVariables>({
     pressure: 60,
     staticWaterLevel: 100,
-    pumpSettingDepth: 20,
+    pumpSettingDepth: 7,
+    gallonsPerMinute: 0,
   });
 
   const handleVariableChange = (key: keyof PumpVariables, value: number) => {
@@ -42,16 +45,13 @@ export default function Home() {
           <h1 className="text-4xl font-bold text-gray-800 mb-2">
             DPWD Pump Selection Tool
           </h1>
-          <p className="text-gray-600">
-            Enter the pressure and depth measurements for your pump application
-          </p>
         </div>
 
         <form
           onSubmit={handleSubmit}
           className="bg-white rounded-lg shadow-xl p-8"
         >
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Pressure */}
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700">
@@ -73,6 +73,30 @@ export default function Home() {
               />
               <p className="text-xs text-gray-500">
                 Required pressure in pounds per square inch
+              </p>
+            </div>
+
+            {/* Gallons Per Minute */}
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700">
+                Gallons Per Minute (GPM)
+              </label>
+              <input
+                type="number"
+                min="0"
+                step="0.1"
+                value={variables.gallonsPerMinute.toString()}
+                onChange={(e) =>
+                  handleVariableChange(
+                    "gallonsPerMinute",
+                    parseFloat(e.target.value) || 0
+                  )
+                }
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900 placeholder-gray-500"
+                placeholder="Enter flow rate"
+              />
+              <p className="text-xs text-gray-500">
+                Required flow rate in gallons per minute
               </p>
             </div>
 
@@ -125,65 +149,34 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Visual Representation */}
-          <div className="mt-8 p-6 bg-gray-50 rounded-lg">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">
-              Well Diagram
-            </h3>
-            <div className="relative h-64 bg-gradient-to-b from-blue-100 to-blue-300 rounded-lg border-2 border-blue-400">
-              {/* Ground Surface */}
-              <div className="absolute top-0 left-0 right-0 h-2 bg-green-600"></div>
-              <div className="absolute top-2 left-4 text-xs font-medium text-green-800">
-                Ground Surface
-              </div>
-
-              {/* Static Water Level */}
-              <div
-                className="absolute left-4 right-4 border-l-2 border-blue-600"
-                style={{
-                  top: `${Math.min(
-                    20 + variables.staticWaterLevel * 2,
-                    200
-                  )}px`,
-                }}
-              >
-                <div className="absolute -left-6 top-0 text-xs font-medium text-blue-800">
-                  Static Water Level: {variables.staticWaterLevel} ft
-                </div>
-              </div>
-
-              {/* Pump Setting Depth */}
-              <div
-                className="absolute left-4 right-4 border-l-2 border-red-600"
-                style={{
-                  top: `${Math.min(
-                    20 + variables.pumpSettingDepth * 2,
-                    200
-                  )}px`,
-                }}
-              >
-                <div className="absolute -left-6 top-0 text-xs font-medium text-red-800">
-                  Pump Setting: {variables.pumpSettingDepth} ft
-                </div>
-              </div>
-
-              {/* Water Level Indicator */}
-              <div className="absolute bottom-0 left-0 right-0 h-8 bg-blue-500 opacity-60"></div>
-              <div className="absolute bottom-2 left-4 text-xs font-medium text-white">
-                Water
-              </div>
-            </div>
-          </div>
-
+          {/*MUI CHART */}
+          <LineChart
+            xAxis={[{ data: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] }]}
+            series={[
+              {
+                data: [
+                  1201, 1190, 1160, 1130, 1080, 1020, 950, 830, 705, 610, 510,
+                  400, 300,
+                ],
+              },
+            ]}
+            height={300}
+          />
           {/* Summary */}
           <div className="mt-8 p-4 bg-gray-50 rounded-lg">
             <h3 className="text-lg font-semibold text-gray-800 mb-3">
               Measurement Summary
             </h3>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-4 text-sm">
               <div>
                 <span className="font-medium text-gray-600">Pressure:</span>
                 <p className="text-gray-800">{variables.pressure} PSI</p>
+              </div>
+              <div>
+                <span className="font-medium text-gray-600">Flow Rate:</span>
+                <p className="text-gray-800">
+                  {variables.gallonsPerMinute} GPM
+                </p>
               </div>
               <div>
                 <span className="font-medium text-gray-600">
