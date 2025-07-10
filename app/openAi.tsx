@@ -17,7 +17,7 @@ const DecidePump = async (
 ) => {
   try {
     // Use environment variable for API key
-    const apiKey = process.env.NEXT_PUBLIC_OPENAI_API_KEY;
+    const apiKey = process.env.OPENAI_API_KEY;
 
     if (!apiKey) {
       console.error("OpenAI API key not found in environment variables");

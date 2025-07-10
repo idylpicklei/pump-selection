@@ -4,67 +4,67 @@
       "name": "5gpm",
       "efficencyRange": [1.5, 7.5],
       "value": 5,
-      "imagePath": "https://raw.githubusercontent.com/idylpicklei/pump-selection/refs/heads/main/public/FloWise/5gpm.png?token=GHSAT0AAAAAADHAZ2SILNHYVF47KKNND6L22DPALSA"
+      "imagePath": "https://github.com/idylpicklei/pump-selection/blob/499c2810ff451cc352f11b65da9ce8d399456dcd/public/FloWise/5gpm.png"
     },
     {
       "name": "7gpm",
       "efficencyRange": [2, 10],
       "value": 7,
-      "imagePath": "https://raw.githubusercontent.com/idylpicklei/pump-selection/refs/heads/main/public/FloWise/7gpm.png?token=GHSAT0AAAAAADHAZ2SJPN3UCOGDCM7J5S342DPAL6Q"
+      "imagePath": "https://github.com/idylpicklei/pump-selection/blob/499c2810ff451cc352f11b65da9ce8d399456dcd/public/FloWise/7gpm.png"
     },
     {
       "name": "10gpm",
       "efficencyRange": [3, 15],
       "value": 10,
-      "imagePath": "https://raw.githubusercontent.com/idylpicklei/pump-selection/refs/heads/main/public/FloWise/10gpm.png?token=GHSAT0AAAAAADHAZ2SJIUKBP2JX5JS6X5IG2DPALBQ"
+      "imagePath": "https://github.com/idylpicklei/pump-selection/blob/499c2810ff451cc352f11b65da9ce8d399456dcd/public/FloWise/10gpm.png"
     },
     {
       "name": "13gpm",
       "efficencyRange": [4, 20],
       "value": 13,
-      "imagePath": "https://raw.githubusercontent.com/idylpicklei/pump-selection/refs/heads/main/public/FloWise/13gpm.png?token=GHSAT0AAAAAADHAZ2SIZNRXSKU3EZTUOWC22DPAMXQ"
+      "imagePath": "https://github.com/idylpicklei/pump-selection/blob/499c2810ff451cc352f11b65da9ce8d399456dcd/public/FloWise/13gpm.png"
     },
     {
       "name": "18gpm",
       "efficencyRange": [6, 28],
       "value": 18,
-      "imagePath": "https://raw.githubusercontent.com/idylpicklei/pump-selection/refs/heads/main/public/FloWise/18gpm.png?token=GHSAT0AAAAAADHAZ2SJT4PMAFXF2ORTAD5Y2DPAMJQ"
+      "imagePath": "https://github.com/idylpicklei/pump-selection/blob/499c2810ff451cc352f11b65da9ce8d399456dcd/public/FloWise/18gpm.png"
     },
     {
       "name": "25gpm",
       "efficencyRange": [8, 32],
       "value": 25,
-      "imagePath": "https://raw.githubusercontent.com/idylpicklei/pump-selection/refs/heads/main/public/FloWise/25gpm.png?token=GHSAT0AAAAAADHAZ2SITH3YMVHPMKMZOKXS2DPANBA"
+      "imagePath": "https://github.com/idylpicklei/pump-selection/blob/499c2810ff451cc352f11b65da9ce8d399456dcd/public/FloWise/25gpm.png"
     },
     {
       "name": "35gpm",
       "efficencyRange": [10, 48],
       "value": 35,
-      "imagePath": "https://raw.githubusercontent.com/idylpicklei/pump-selection/refs/heads/main/public/FloWise/35gpm.png?token=GHSAT0AAAAAADHAZ2SJ6YMZ4U2FNXETQOQ22DPANOA"
+      "imagePath": "https://github.com/idylpicklei/pump-selection/blob/499c2810ff451cc352f11b65da9ce8d399456dcd/public/FloWise/35gpm.png"
     },
     {
       "name": "40gpm",
       "efficencyRange": [20, 62],
       "value": 40,
-      "imagePath": "https://raw.githubusercontent.com/idylpicklei/pump-selection/refs/heads/main/public/FloWise/40gpm.png?token=GHSAT0AAAAAADHAZ2SITV2XQI2PPHIR5IU42DPAOAA"
+      "imagePath": "https://github.com/idylpicklei/pump-selection/blob/499c2810ff451cc352f11b65da9ce8d399456dcd/public/FloWise/40gpm.png"
     },
     {
       "name": "55gpm",
       "efficencyRange": [20, 78],
       "value": 55,
-      "imagePath": "https://raw.githubusercontent.com/idylpicklei/pump-selection/refs/heads/main/public/FloWise/55gpm.png?token=GHSAT0AAAAAADHAZ2SIEBAUGAWKHZEYUJPU2DPAOJA"
+      "imagePath": "https://github.com/idylpicklei/pump-selection/blob/499c2810ff451cc352f11b65da9ce8d399456dcd/public/FloWise/55gpm.png"
     },
     {
       "name": "60gpm",
       "efficencyRange": [40, 80],
       "value": 60,
-      "imagePath": "https://raw.githubusercontent.com/idylpicklei/pump-selection/refs/heads/main/public/FloWise/60gpm.png?token=GHSAT0AAAAAADHAZ2SJDDVO547F5KZU7EOQ2DPAOSQ"
+      "imagePath": "https://github.com/idylpicklei/pump-selection/blob/499c2810ff451cc352f11b65da9ce8d399456dcd/public/FloWise/60gpm.png"
     },
     {
       "name": "80gpm",
       "efficencyRange": [50, 120],
       "value": 80,
-      "imagePath": "https://raw.githubusercontent.com/idylpicklei/pump-selection/refs/heads/main/public/FloWise/80gpm.png?token=GHSAT0AAAAAADHAZ2SIHOAT55QRNKGEXSDY2DPAO3A"
+      "imagePath": "https://github.com/idylpicklei/pump-selection/blob/499c2810ff451cc352f11b65da9ce8d399456dcd/public/FloWise/80gpm.png"
     }
   ]
 }
