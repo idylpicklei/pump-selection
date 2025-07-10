@@ -4,67 +4,67 @@
       "name": "5gpm",
       "efficencyRange": [1.5, 7.5],
       "value": 5,
-      "imagePath": "https://github.com/idylpicklei/pump-selection/blob/499c2810ff451cc352f11b65da9ce8d399456dcd/public/FloWise/5gpm.png"
+      "imagePath": "https://idylpicklei.github.io/images/5gpm.png"
     },
     {
       "name": "7gpm",
       "efficencyRange": [2, 10],
       "value": 7,
-      "imagePath": "https://github.com/idylpicklei/pump-selection/blob/499c2810ff451cc352f11b65da9ce8d399456dcd/public/FloWise/7gpm.png"
+      "imagePath": "https://idylpicklei.github.io/images/7gpm.png"
     },
     {
       "name": "10gpm",
       "efficencyRange": [3, 15],
       "value": 10,
-      "imagePath": "https://github.com/idylpicklei/pump-selection/blob/499c2810ff451cc352f11b65da9ce8d399456dcd/public/FloWise/10gpm.png"
+      "imagePath": "https://idylpicklei.github.io/images/10gpm.png"
     },
     {
       "name": "13gpm",
       "efficencyRange": [4, 20],
       "value": 13,
-      "imagePath": "https://github.com/idylpicklei/pump-selection/blob/499c2810ff451cc352f11b65da9ce8d399456dcd/public/FloWise/13gpm.png"
+      "imagePath": "https://idylpicklei.github.io/images/13gpm.png"
     },
     {
       "name": "18gpm",
       "efficencyRange": [6, 28],
       "value": 18,
-      "imagePath": "https://github.com/idylpicklei/pump-selection/blob/499c2810ff451cc352f11b65da9ce8d399456dcd/public/FloWise/18gpm.png"
+      "imagePath": "https://idylpicklei.github.io/images/18gpm.png"
     },
     {
       "name": "25gpm",
       "efficencyRange": [8, 32],
       "value": 25,
-      "imagePath": "https://github.com/idylpicklei/pump-selection/blob/499c2810ff451cc352f11b65da9ce8d399456dcd/public/FloWise/25gpm.png"
+      "imagePath": "https://idylpicklei.github.io/images/25gpm.png"
     },
     {
       "name": "35gpm",
       "efficencyRange": [10, 48],
       "value": 35,
-      "imagePath": "https://github.com/idylpicklei/pump-selection/blob/499c2810ff451cc352f11b65da9ce8d399456dcd/public/FloWise/35gpm.png"
+      "imagePath": "https://idylpicklei.github.io/images/35gpm.png"
     },
     {
       "name": "40gpm",
       "efficencyRange": [20, 62],
       "value": 40,
-      "imagePath": "https://github.com/idylpicklei/pump-selection/blob/499c2810ff451cc352f11b65da9ce8d399456dcd/public/FloWise/40gpm.png"
+      "imagePath": "https://idylpicklei.github.io/images/40gpm.png"
     },
     {
       "name": "55gpm",
       "efficencyRange": [20, 78],
       "value": 55,
-      "imagePath": "https://github.com/idylpicklei/pump-selection/blob/499c2810ff451cc352f11b65da9ce8d399456dcd/public/FloWise/55gpm.png"
+      "imagePath": "https://idylpicklei.github.io/images/55gpm.png"
     },
     {
       "name": "60gpm",
       "efficencyRange": [40, 80],
       "value": 60,
-      "imagePath": "https://github.com/idylpicklei/pump-selection/blob/499c2810ff451cc352f11b65da9ce8d399456dcd/public/FloWise/60gpm.png"
+      "imagePath": "https://idylpicklei.github.io/images/60gpm.png"
     },
     {
       "name": "80gpm",
       "efficencyRange": [50, 120],
       "value": 80,
-      "imagePath": "https://github.com/idylpicklei/pump-selection/blob/499c2810ff451cc352f11b65da9ce8d399456dcd/public/FloWise/80gpm.png"
+      "imagePath": "https://idylpicklei.github.io/images/80gpm.png"
     }
   ]
 }
