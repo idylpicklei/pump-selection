@@ -23,7 +23,7 @@ export default function Home() {
     pressure: 60,
     staticWaterLevel: 100,
     pumpSettingDepth: 7,
-    gallonsPerMinute: 0,
+    gallonsPerMinute: 18,
   });
 
   const [selectedPump, setSelectedPump] = useState<string | null>(null);
@@ -242,25 +242,23 @@ export default function Home() {
             </div>
           </div>
 
-          {/*MUI CHART */}
-          <LineChart
-            xAxis={[{ data: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] }]}
-            series={[
-              {
-                data: [
-                  1201, 1190, 1160, 1130, 1080, 1020, 950, 830, 705, 610, 510,
-                  400, 300,
-                ],
-                label: "Pump Curve",
-              },
-              {
-                data: Array(13).fill(totalHead),
-                label: `Total Head: ${totalHead.toFixed(1)} ft`,
-                color: "red",
-              },
-            ]}
-            height={300}
-          />
+          {/* Selected Pump Display */}
+          {selectedPump && (
+            <div className="mt-8 bg-white rounded-lg shadow-md p-8">
+              <h2 className="text-2xl font-bold text-gray-800 mb-4 text-center">
+                Recommended Pump
+              </h2>
+              <div className="text-center">
+                <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg">
+                  <p className="text-lg font-semibold">{selectedPump}</p>
+                  <p className="text-sm mt-1">
+                    This pump has been selected based on your requirements.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Summary */}
           <div className="mt-8 p-4 bg-gray-50 rounded-lg">
             <h3 className="text-lg font-semibold text-gray-800 mb-3">
@@ -310,23 +308,6 @@ export default function Home() {
             </button>
           </div>
         </form>
-
-        {/* Selected Pump Display */}
-        {selectedPump && (
-          <div className="mt-8 bg-white rounded-lg shadow-xl p-8">
-            <h2 className="text-2xl font-bold text-gray-800 mb-4 text-center">
-              Recommended Pump
-            </h2>
-            <div className="text-center">
-              <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg">
-                <p className="text-lg font-semibold">{selectedPump}</p>
-                <p className="text-sm mt-1">
-                  This pump has been selected based on your requirements.
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
