@@ -61,7 +61,7 @@ export default function PasswordProtection({
           <div className="bg-white rounded-lg shadow-xl p-8">
             <div className="text-center mb-8">
               <h1 className="text-3xl font-bold text-gray-800 mb-2">
-                DPWD Pump Selection Tool
+                Pump Selection Tool
               </h1>
               <p className="text-gray-600">
                 Please enter the password to access the tool

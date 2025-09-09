@@ -19,10 +19,8 @@ interface Pump {
 }
 
 interface FilterState {
-  minGPM: number;
-  maxGPM: number;
-  minEfficiency: number;
-  maxEfficiency: number;
+  targetGPM: number;
+  targetTotalHead: number;
   searchTerm: string;
   showImages: boolean;
 }
@@ -39,22 +37,38 @@ export default function Home() {
   const [pumpData, setPumpData] = useState<Pump[]>([]);
   const [filteredPumps, setFilteredPumps] = useState<Pump[]>([]);
   const [filters, setFilters] = useState<FilterState>({
-    minGPM: 0,
-    maxGPM: 100,
-    minEfficiency: 0,
-    maxEfficiency: 100,
+    targetGPM: 0,
+    targetTotalHead: 0,
     searchTerm: "",
     showImages: false,
   });
 
-  // Load pump data on component mount
+  // Load pump data from database on component mount
   useEffect(() => {
     const loadPumpData = async () => {
       try {
-        const response = await fetch("/floWise.json");
+        const response = await fetch("/api/pumps");
+        if (!response.ok) {
+          throw new Error("Failed to fetch pump data from database");
+        }
         const data = await response.json();
-        setPumpData(data.floWise);
-        setFilteredPumps(data.floWise);
+        // Transform database format to match existing interface
+        const transformedData = data.pumps.map(
+          (pump: {
+            name: string;
+            efficiency_min: number;
+            efficiency_max: number;
+            gpm_value: number;
+            image_path: string;
+          }) => ({
+            name: pump.name,
+            efficencyRange: [pump.efficiency_min, pump.efficiency_max],
+            value: pump.gpm_value,
+            imagePath: pump.image_path,
+          })
+        );
+        setPumpData(transformedData);
+        setFilteredPumps(transformedData);
       } catch (error) {
         console.error("Error loading pump data:", error);
       }
@@ -62,39 +76,100 @@ export default function Home() {
     loadPumpData();
   }, []);
 
-  // Apply filters whenever filters change
+  // Apply filters using database API
   useEffect(() => {
-    const applyFilters = () => {
-      let filtered = [...pumpData];
+    const applyFilters = async () => {
+      try {
+        let apiUrl = "/api/pumps";
+        const params = new URLSearchParams();
 
-      // Filter by GPM range
-      filtered = filtered.filter(
-        (pump) => pump.value >= filters.minGPM && pump.value <= filters.maxGPM
-      );
+        // Build query parameters based on active filters
+        if (filters.targetGPM > 0) {
+          // Use ±5 GPM tolerance for database query
+          params.append("minGPM", (filters.targetGPM - 5).toString());
+          params.append("maxGPM", (filters.targetGPM + 5).toString());
+        }
 
-      // Filter by efficiency range
-      filtered = filtered.filter(
-        (pump) =>
-          pump.efficencyRange[0] >= filters.minEfficiency &&
-          pump.efficencyRange[1] <= filters.maxEfficiency
-      );
+        if (filters.searchTerm) {
+          params.append("search", filters.searchTerm);
+        }
 
-      // Filter by search term
-      if (filters.searchTerm) {
-        filtered = filtered.filter(
-          (pump) =>
-            pump.name
-              .toLowerCase()
-              .includes(filters.searchTerm.toLowerCase()) ||
-            pump.value.toString().includes(filters.searchTerm)
+        // Add parameters to URL if any exist
+        if (params.toString()) {
+          apiUrl += `?${params.toString()}`;
+        }
+
+        const response = await fetch(apiUrl);
+        if (!response.ok) {
+          throw new Error("Failed to fetch filtered pump data");
+        }
+        const data = await response.json();
+
+        // Transform database format to match existing interface
+        let filtered = data.pumps.map(
+          (pump: {
+            name: string;
+            efficiency_min: number;
+            efficiency_max: number;
+            gpm_value: number;
+            image_path: string;
+          }) => ({
+            name: pump.name,
+            efficencyRange: [pump.efficiency_min, pump.efficiency_max],
+            value: pump.gpm_value,
+            imagePath: pump.image_path,
+          })
         );
-      }
 
-      setFilteredPumps(filtered);
+        // Apply total head filter on the client side (since it depends on variables)
+        if (filters.targetTotalHead > 0) {
+          filtered = filtered.filter((pump: Pump) => {
+            const pumpTotalHead =
+              variables.pressure * 2.31 +
+              variables.staticWaterLevel +
+              (variables.pressure * 2.31 + variables.pumpSettingDepth);
+            return Math.abs(pumpTotalHead - filters.targetTotalHead) <= 25;
+          });
+        }
+
+        setFilteredPumps(filtered);
+      } catch (error) {
+        console.error("Error applying filters:", error);
+        // Fallback to local filtering if API fails
+        let filtered = [...pumpData];
+
+        if (filters.targetGPM > 0) {
+          filtered = filtered.filter(
+            (pump) => Math.abs(pump.value - filters.targetGPM) <= 5
+          );
+        }
+
+        if (filters.targetTotalHead > 0) {
+          filtered = filtered.filter((pump) => {
+            const pumpTotalHead =
+              variables.pressure * 2.31 +
+              variables.staticWaterLevel +
+              (variables.pressure * 2.31 + variables.pumpSettingDepth);
+            return Math.abs(pumpTotalHead - filters.targetTotalHead) <= 25;
+          });
+        }
+
+        if (filters.searchTerm) {
+          filtered = filtered.filter(
+            (pump) =>
+              pump.name
+                .toLowerCase()
+                .includes(filters.searchTerm.toLowerCase()) ||
+              pump.value.toString().includes(filters.searchTerm)
+          );
+        }
+
+        setFilteredPumps(filtered);
+      }
     };
 
     applyFilters();
-  }, [filters, pumpData]);
+  }, [filters, pumpData, variables]);
 
   const handleVariableChange = (key: keyof PumpVariables, value: number) => {
     setVariables((prev) => ({
@@ -112,10 +187,8 @@ export default function Home() {
 
   const resetFilters = () => {
     setFilters({
-      minGPM: 0,
-      maxGPM: 100,
-      minEfficiency: 0,
-      maxEfficiency: 100,
+      targetGPM: 0,
+      targetTotalHead: 0,
       searchTerm: "",
       showImages: false,
     });
@@ -126,32 +199,28 @@ export default function Home() {
       case "low-flow":
         setFilters({
           ...filters,
-          minGPM: 0,
-          maxGPM: 15,
+          targetGPM: 10,
           searchTerm: "",
         });
         break;
       case "medium-flow":
         setFilters({
           ...filters,
-          minGPM: 15,
-          maxGPM: 40,
+          targetGPM: 25,
           searchTerm: "",
         });
         break;
       case "high-flow":
         setFilters({
           ...filters,
-          minGPM: 40,
-          maxGPM: 100,
+          targetGPM: 50,
           searchTerm: "",
         });
         break;
       case "exact-match":
         setFilters({
           ...filters,
-          minGPM: variables.gallonsPerMinute - 2,
-          maxGPM: variables.gallonsPerMinute + 2,
+          targetGPM: variables.gallonsPerMinute,
           searchTerm: "",
         });
         break;
@@ -161,21 +230,19 @@ export default function Home() {
   const getImagePath = (pumpName: string) => {
     // Map pump names to their corresponding image files
     const imageMap: { [key: string]: string } = {
-      "5gpm": "/FloWise/2025 FloWise-S-Series Pump Curve Book.jpg",
-      "7gpm": "/FloWise/2025 FloWise-S-Series Pump 2.jpg",
-      "10gpm": "/FloWise/2025 FloWise-S-Series Pump Curve Book 3.jpg",
-      "13gpm": "/FloWise/2025 FloWise-S-Series Pump Curve Book 4.jpg",
-      "18gpm": "/FloWise/2025 FloWise-S-Series Pump Curve Book 5.jpg",
-      "25gpm": "/FloWise/2025 FloWise-S-Series Pump Curve Book 6.jpg",
-      "35gpm": "/FloWise/2025 FloWise-S-Series Pump Curve Book 7.jpg",
-      "40gpm": "/FloWise/2025 FloWise-S-Series Pump Curve Book 8.jpg",
-      "55gpm": "/FloWise/2025 FloWise-S-Series Pump Curve Book 9.jpg",
-      "60gpm": "/FloWise/2025 FloWise-S-Series Pump Curve Book 10.jpg",
-      "80gpm": "/FloWise/2025 FloWise-S-Series Pump Curve Book 11.jpg",
+      "5gpm": "/FloWise/5gpm/5-curve.png",
+      "7gpm": "/FloWise/7gpm/7-curve.png",
+      "10gpm": "/FloWise/10gpm/10-curve.png",
+      "13gpm": "/FloWise/13gpm/13-curve.png",
+      "18gpm": "/FloWise/18gpm/18-curve.png",
+      "25gpm": "/FloWise/25gpm/25-curve.png",
+      "35gpm": "/FloWise/35gpm/35-curve.png",
+      "40gpm": "/FloWise/40gpm/40-curve.png",
+      "55gpm": "/FloWise/55gpm/55-curve.png",
+      "60gpm": "/FloWise/60gpm/60-curve.png",
+      "80gpm": "/FloWise/80gpm/80-curve.png",
     };
-    return (
-      imageMap[pumpName] || "/FloWise/2025 FloWise-S-Series Pump Curve Book.jpg"
-    );
+    return imageMap[pumpName] || "/FloWise/5gpm/5-curve.png";
   };
 
   const generatePumpSelection = async () => {
@@ -187,8 +254,7 @@ export default function Home() {
       const targetGPM = variables.gallonsPerMinute;
       setFilters((prev) => ({
         ...prev,
-        minGPM: Math.max(0, targetGPM - 5),
-        maxGPM: targetGPM + 5,
+        targetGPM: targetGPM,
         searchTerm: "",
       }));
 
@@ -221,7 +287,7 @@ export default function Home() {
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-gray-800 mb-2">
-            DPWD Pump Selection Tool
+            Pump Selection Tool
           </h1>
         </div>
 
@@ -241,78 +307,46 @@ export default function Home() {
 
           {/* Filter Controls */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-            {/* GPM Range */}
+            {/* Target GPM */}
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-900">
-                GPM Range
+                Target GPM (±5)
               </label>
-              <div className="flex space-x-2">
-                <input
-                  type="number"
-                  min="0"
-                  max="100"
-                  value={filters.minGPM}
-                  onChange={(e) =>
-                    handleFilterChange(
-                      "minGPM",
-                      parseFloat(e.target.value) || 0
-                    )
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
-                  placeholder="Min"
-                />
-                <input
-                  type="number"
-                  min="0"
-                  max="100"
-                  value={filters.maxGPM}
-                  onChange={(e) =>
-                    handleFilterChange(
-                      "maxGPM",
-                      parseFloat(e.target.value) || 100
-                    )
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
-                  placeholder="Max"
-                />
-              </div>
+              <input
+                type="number"
+                min="0"
+                max="100"
+                value={filters.targetGPM}
+                onChange={(e) =>
+                  handleFilterChange(
+                    "targetGPM",
+                    parseFloat(e.target.value) || 0
+                  )
+                }
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                placeholder="Enter target GPM"
+              />
             </div>
 
-            {/* Efficiency Range */}
+            {/* Target Total Head */}
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-900">
-                Efficiency Range
+                Target Total Head (ft) (±25)
               </label>
-              <div className="flex space-x-2">
-                <input
-                  type="number"
-                  min="0"
-                  max="100"
-                  value={filters.minEfficiency}
-                  onChange={(e) =>
-                    handleFilterChange(
-                      "minEfficiency",
-                      parseFloat(e.target.value) || 0
-                    )
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
-                  placeholder="Min"
-                />
-                <input
-                  type="number"
-                  min="0"
-                  max="100"
-                  value={filters.maxEfficiency}
-                  onChange={(e) =>
-                    handleFilterChange(
-                      "maxEfficiency",
-                      parseFloat(e.target.value) || 100
-                    )
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
-                  placeholder="Max"
-                />
-              </div>
+              <input
+                type="number"
+                min="0"
+                max="1000"
+                value={filters.targetTotalHead}
+                onChange={(e) =>
+                  handleFilterChange(
+                    "targetTotalHead",
+                    parseFloat(e.target.value) || 0
+                  )
+                }
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                placeholder="Enter target total head"
+              />
             </div>
 
             {/* Search */}
@@ -363,25 +397,25 @@ export default function Home() {
                 onClick={() => applyPresetFilter("low-flow")}
                 className="bg-blue-100 hover:bg-blue-200 text-blue-800 text-sm font-medium px-3 py-1 rounded-lg transition-colors duration-200"
               >
-                Low Flow (0-15 GPM)
+                Low Flow (10 GPM)
               </button>
               <button
                 onClick={() => applyPresetFilter("medium-flow")}
                 className="bg-green-100 hover:bg-green-200 text-green-800 text-sm font-medium px-3 py-1 rounded-lg transition-colors duration-200"
               >
-                Medium Flow (15-40 GPM)
+                Medium Flow (25 GPM)
               </button>
               <button
                 onClick={() => applyPresetFilter("high-flow")}
                 className="bg-orange-100 hover:bg-orange-200 text-orange-800 text-sm font-medium px-3 py-1 rounded-lg transition-colors duration-200"
               >
-                High Flow (40+ GPM)
+                High Flow (50 GPM)
               </button>
               <button
                 onClick={() => applyPresetFilter("exact-match")}
                 className="bg-purple-100 hover:bg-purple-200 text-purple-800 text-sm font-medium px-3 py-1 rounded-lg transition-colors duration-200"
               >
-                Match Current GPM (±2)
+                Match Current GPM
               </button>
             </div>
           </div>

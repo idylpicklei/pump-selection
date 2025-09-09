@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "DPWD Pump Selection Tool",
-  description: "Password protected pump selection tool for DPWD",
+  title: "Pump Selection Tool",
+  description: "Password protected pump selection tool",
 };
 
 export default function RootLayout({
